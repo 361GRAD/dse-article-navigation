@@ -1,0 +1,18 @@
+<?xml version="1.0" ?><xliff version="1.1">
+  <file datatype="php" original="src/Resources/contao/languages/en/default.php" source-language="en" target-language="de">
+    <body>
+      <trans-unit id="tl_article.nav_legend">
+        <source>Article navigation</source>
+        <target>Artikelnavigation</target>
+      </trans-unit>
+      <trans-unit id="tl_article.dseArticleNavTitle.0">
+        <source>Title</source>
+        <target>Titel</target>
+      </trans-unit>
+      <trans-unit id="tl_article.dseArticleNavTitle.1">
+        <source>Title will be shown in the navigation.</source>
+        <target>Titel der in der Navigation angezeigt wird.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

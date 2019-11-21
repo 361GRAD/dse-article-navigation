@@ -1,0 +1,111 @@
+div[data-ansticky="true"] {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 1;
+}
+div[data-ansticky="true"] .anWrapper {
+	width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+	margin-left: auto;
+	max-width: 100%;
+}
+
+@media only screen and (min-width: 1200px) {
+	div[data-ansticky="true"] .anWrapper {
+		max-width: 1170px;
+	}
+}
+
+.anWrapper {
+	position: relative;
+	padding: 0 15px;
+	background-color: #F0F0F0;
+}
+
+.an-article-nav {
+    position: relative;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+	font-size: 0;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+    scrollbar-width: none;
+}
+.an-article-nav::-webkit-scrollbar {
+    display: none;
+}
+
+.an-article-nav-contents {
+	position: relative;
+	float: left;
+	transition: transform .2s ease-in-out;
+}
+
+.an-article-nav-contents.no-transition {
+	transition: none;
+}
+
+.an-nav-link {
+	color: #000;
+	font-size: 20px;
+	display: inline-block;
+	align-items: center;
+	border: 1px solid transparent;
+	padding: 10px 20px;
+}
+.an-nav-link + .an-nav-link {
+    border-left-color: #eee;
+}
+.an-nav-link[aria-selected="true"] {
+    color: #111;
+}
+
+.an-button {
+	padding: 0 0;
+    -webkit-appearance: none;
+    border: none;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+	position: absolute;
+    top: 0;
+    width: 20px;
+    height: 100%;
+	opacity: 0;
+	transition: opacity .3s;
+}
+
+.an-button.left {
+	left: 0;
+}
+.an-article-nav[data-overflowing="both"] ~ .an-button.left,
+.an-article-nav[data-overflowing="left"] ~ .an-button.left {
+    opacity: 1;
+}
+
+.an-button.right {
+	right: 0;
+}
+.an-article-nav[data-overflowing="both"] ~ .an-button.right,
+.an-article-nav[data-overflowing="right"] ~ .an-button.right {
+    opacity: 1;
+}
+
+.an-button-icon {
+	width: 20px;
+	height: 44px;
+	fill: #bbb;
+}
+
+.an-indicator {
+	position: absolute;
+	bottom: 0;
+	left: 0px;
+    height: 4px;
+    width: 100px;
+	transform-origin: 0 0;
+    transition: transform .2s ease-in-out, background-color .2s ease-in-out;
+}
