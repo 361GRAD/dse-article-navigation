@@ -1,7 +1,6 @@
 <?php
 
 if (TL_MODE == 'FE') {
-    // $GLOBALS['TL_JAVASCRIPT'][] = 'bundles/dsearticlenavigation/js/sticky.min.js|static';
     $GLOBALS['TL_JAVASCRIPT'][] = 'bundles/dsearticlenavigation/js/dsearticlenavigation.js|static';
 
     $GLOBALS['TL_CSS'][] = 'bundles/dsearticlenavigation/css/dsearticlenavigation.css|static';

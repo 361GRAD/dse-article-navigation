@@ -182,7 +182,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
         return false;
     });
-    
+
     checkActiveArticle();
 });
 
@@ -204,8 +204,17 @@ window.addEventListener("scroll", timeoutFunc(function (event) {
 
 function makeSticky() {
     let anArticleNavEl = document.querySelector('[data-ansticky]');
+    if (anArticleNavEl === null) {
+        return false
+    }
+
+    let fixedHeaderHeight = 0;
+    console.dir(anArticleNavEl);
+    if (document.getElementById('fixedHeader') !== null) {
+        fixedHeaderHeight = document.getElementById('fixedHeader').clientHeight
+    }
     // minus header height because header is also sticky
-    if (window.pageYOffset > (anArticleNavEl.closest('.mod_article').offsetTop - document.querySelector('.header-block').clientHeight)) {
+    if (window.pageYOffset > (anArticleNavEl.closest('.mod_article').offsetTop - fixedHeaderHeight)) {
         anArticleNavEl.parentNode.style.height = document.getElementById('anArticleNav').clientHeight + 'px';
         anArticleNavEl.setAttribute('data-ansticky', 'true');
     } else {
@@ -224,22 +233,25 @@ function checkActiveArticle() {
             top: scroll,
             bottom: scroll + window.innerHeight,
         }
-        
+
         let bounds = {
             top: boundsTop,
             bottom: boundsTop + el.clientHeight,
         }
-        
-        if (bounds.bottom >= (viewport.top + document.getElementById('anArticleNav').clientHeight) || bounds.top >= (viewport.top + document.getElementById('anArticleNav').clientHeight) ) {
-            var navLink = document.querySelector('a[href="#' + el.id + '"]');
-            // only adjust the navigation when there is an article with a headline (this headline will also be in the navigation)
-            if (el.hasAttribute('data-articlenav')) {
-                navLink.setAttribute("aria-selected", "true");
 
-                moveIndicator(navLink);
+        let anArticleNav = document.getElementById('anArticleNav');
+        if (anArticleNav !== null) {
+            if (bounds.bottom >= (viewport.top + anArticleNav.clientHeight) || bounds.top >= (viewport.top + anArticleNav.clientHeight)) {
+                var navLink = document.querySelector('a[href="#' + el.id + '"]');
+                // only adjust the navigation when there is an article with a headline (this headline will also be in the navigation)
+                if (el.hasAttribute('data-articlenav')) {
+                    navLink.setAttribute("aria-selected", "true");
+    
+                    moveIndicator(navLink);
+                }
+    
+                break;
             }
-
-            break;
         }
     }
 }
@@ -254,7 +266,7 @@ function resetNavLinks() {
 }
 
 // let count = 0;
-function moveIndicator(item, color=0) {
+function moveIndicator(item, color = 0) {
     let textPositionWidth = 0;
     let textPosition = item.getBoundingClientRect();
     let container = anArticleNavContents.getBoundingClientRect().left;
@@ -318,11 +330,11 @@ function scrollPageTo(to, duration = 500) {
         if (typeof to !== 'number') {
             to = to.getBoundingClientRect().top + element.scrollTop;
         }
-
+        // ToDo: check if element is above the sticky nav so we dont need an offset
         let offset = document.getElementById('anArticleNav').clientHeight - 1,
-            headerHeight = document.querySelector('.header-block').clientHeight,
+            fixedHeader = document.getElementById('fixedHeader').clientHeight,
             start = element.scrollTop,
-            change = to - start - offset - headerHeight,
+            change = to - start - offset - fixedHeader,
             currentTime = 0,
             increment = 20;
 
