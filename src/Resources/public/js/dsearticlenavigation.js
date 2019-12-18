@@ -12,8 +12,9 @@
 // })(jQuery);
 
 let initialIndicator = true;
+let windowWidth = 0;
 document.addEventListener("DOMContentLoaded", function (event) {
-
+    windowWidth = window.outerWidth;
     if (document.getElementById('anArticleNav') === null) {
         return false;
     }
@@ -23,9 +24,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
     document.querySelectorAll('[data-articlenav]').forEach((el, index) => {
         articleAttr = el.dataset.articlenav;
         if (index == 0) {
-            articleNavHtml += '<a class="an-nav-link" href="#article-' + articleAttr.split('-')[0] + '" aria-selected="true">' + articleAttr.substr(articleAttr.indexOf("-") + 1) + '</a>';
+            articleNavHtml += '<a data-index="0" class="an-nav-link" href="#article-' + articleAttr.split('-')[0] + '" aria-selected="true">' + articleAttr.substr(articleAttr.indexOf("-") + 1) + '</a>';
         } else {
-            articleNavHtml += '<a class="an-nav-link" href="#article-' + articleAttr.split('-')[0] + '" aria-selected="false">' + articleAttr.substr(articleAttr.indexOf("-") + 1) + '</a>';
+            articleNavHtml += '<a data-index="' + index + '" class="an-nav-link" href="#article-' + articleAttr.split('-')[0] + '" aria-selected="false">' + articleAttr.substr(articleAttr.indexOf("-") + 1) + '</a>';
         }
     });
     articleNavHtml += '<span id="anIndicator" class="an-indicator"></span>';
@@ -93,81 +94,82 @@ document.addEventListener("DOMContentLoaded", function (event) {
         ticking = true;
     });
 
-
-    anButtonLeft.addEventListener("click", function () {
-        // If in the middle of a move return
-        if (anSettings.navBarTravelling === true) {
-            return;
-        }
-        if (determineOverflow(anArticleNavContents, anArticleNav) === "left" || determineOverflow(anArticleNavContents, anArticleNav) === "both") {
-            // Find how far this panel has been scrolled
-            let availableScrollLeft = anArticleNav.scrollLeft;
-            // If the space available is less than two lots of our desired distance, just move the whole amount
-            // otherwise, move by the amount in the settings
-            if (availableScrollLeft < anSettings.navBarTravelDistance * 2) {
-                anArticleNavContents.style.transform = "translateX(" + availableScrollLeft + "px)";
-            } else {
-                anArticleNavContents.style.transform = "translateX(" + anSettings.navBarTravelDistance + "px)";
+    if (windowWidth >= 1200) {
+        anButtonLeft.addEventListener("click", function () {
+            // If in the middle of a move return
+            if (anSettings.navBarTravelling === true) {
+                return;
             }
-            // We do want a transition (this is set in CSS) when moving so remove the class that would prevent that
-            anArticleNavContents.classList.remove("no-transition");
-            // Update our settings
-            anSettings.navBarTravelDirection = "left";
-            anSettings.navBarTravelling = true;
-        }
-        // Now update the attribute in the DOM
-        anArticleNav.setAttribute("data-overflowing", determineOverflow(anArticleNavContents, anArticleNav));
-    });
-
-    anButtonRight.addEventListener("click", function () {
-        // If in the middle of a move return
-        if (anSettings.navBarTravelling === true) {
-            return;
-        }
-        // If we have content overflowing both sides or on the right
-        if (determineOverflow(anArticleNavContents, anArticleNav) === "right" || determineOverflow(anArticleNavContents, anArticleNav) === "both") {
-            // Get the right edge of the container and content
-            let navBarRightEdge = anArticleNavContents.getBoundingClientRect().right;
-            let navBarScrollerRightEdge = anArticleNav.getBoundingClientRect().right;
-            // Now we know how much space we have available to scroll
-            let availableScrollRight = Math.floor(navBarRightEdge - navBarScrollerRightEdge);
-            // If the space available is less than two lots of our desired distance, just move the whole amount
-            // otherwise, move by the amount in the settings
-            if (availableScrollRight < anSettings.navBarTravelDistance * 2) {
-                anArticleNavContents.style.transform = "translateX(-" + availableScrollRight + "px)";
-            } else {
-                anArticleNavContents.style.transform = "translateX(-" + anSettings.navBarTravelDistance + "px)";
+            if (determineOverflow(anArticleNavContents, anArticleNav) === "left" || determineOverflow(anArticleNavContents, anArticleNav) === "both") {
+                // Find how far this panel has been scrolled
+                let availableScrollLeft = anArticleNav.scrollLeft;
+                // If the space available is less than two lots of our desired distance, just move the whole amount
+                // otherwise, move by the amount in the settings
+                if (availableScrollLeft < anSettings.navBarTravelDistance * 2) {
+                    anArticleNavContents.style.transform = "translateX(" + availableScrollLeft + "px)";
+                } else {
+                    anArticleNavContents.style.transform = "translateX(" + anSettings.navBarTravelDistance + "px)";
+                }
+                // We do want a transition (this is set in CSS) when moving so remove the class that would prevent that
+                anArticleNavContents.classList.remove("no-transition");
+                // Update our settings
+                anSettings.navBarTravelDirection = "left";
+                anSettings.navBarTravelling = true;
             }
-            // We do want a transition (this is set in CSS) when moving so remove the class that would prevent that
-            anArticleNavContents.classList.remove("no-transition");
-            // Update our settings
-            anSettings.navBarTravelDirection = "right";
-            anSettings.navBarTravelling = true;
-        }
-        // Now update the attribute in the DOM
-        anArticleNav.setAttribute("data-overflowing", determineOverflow(anArticleNavContents, anArticleNav));
-    });
+            // Now update the attribute in the DOM
+            anArticleNav.setAttribute("data-overflowing", determineOverflow(anArticleNavContents, anArticleNav));
+        });
 
-    anArticleNavContents.addEventListener(
-        "transitionend",
-        function () {
-            // get the value of the transform, apply that to the current scroll position (so get the scroll pos first) and then remove the transform
-            let styleOfTransform = window.getComputedStyle(anArticleNavContents, null);
-            let tr = styleOfTransform.getPropertyValue("-webkit-transform") || styleOfTransform.getPropertyValue("transform");
-            // If there is no transition we want to default to 0 and not null
-            let amount = Math.abs(parseInt(tr.split(",")[4]) || 0);
-            anArticleNavContents.style.transform = "none";
-            anArticleNavContents.classList.add("no-transition");
-            // Now lets set the scroll position
-            if (anSettings.navBarTravelDirection === "left") {
-                anArticleNav.scrollLeft = anArticleNav.scrollLeft - amount;
-            } else {
-                anArticleNav.scrollLeft = anArticleNav.scrollLeft + amount;
+        anButtonRight.addEventListener("click", function () {
+            // If in the middle of a move return
+            if (anSettings.navBarTravelling === true) {
+                return;
             }
-            anSettings.navBarTravelling = false;
-        },
-        false
-    );
+            // If we have content overflowing both sides or on the right
+            if (determineOverflow(anArticleNavContents, anArticleNav) === "right" || determineOverflow(anArticleNavContents, anArticleNav) === "both") {
+                // Get the right edge of the container and content
+                let navBarRightEdge = anArticleNavContents.getBoundingClientRect().right;
+                let navBarScrollerRightEdge = anArticleNav.getBoundingClientRect().right;
+                // Now we know how much space we have available to scroll
+                let availableScrollRight = Math.floor(navBarRightEdge - navBarScrollerRightEdge);
+                // If the space available is less than two lots of our desired distance, just move the whole amount
+                // otherwise, move by the amount in the settings
+                if (availableScrollRight < anSettings.navBarTravelDistance * 2) {
+                    anArticleNavContents.style.transform = "translateX(-" + availableScrollRight + "px)";
+                } else {
+                    anArticleNavContents.style.transform = "translateX(-" + anSettings.navBarTravelDistance + "px)";
+                }
+                // We do want a transition (this is set in CSS) when moving so remove the class that would prevent that
+                anArticleNavContents.classList.remove("no-transition");
+                // Update our settings
+                anSettings.navBarTravelDirection = "right";
+                anSettings.navBarTravelling = true;
+            }
+            // Now update the attribute in the DOM
+            anArticleNav.setAttribute("data-overflowing", determineOverflow(anArticleNavContents, anArticleNav));
+        });
+
+        anArticleNavContents.addEventListener(
+            "transitionend",
+            function () {
+                // get the value of the transform, apply that to the current scroll position (so get the scroll pos first) and then remove the transform
+                let styleOfTransform = window.getComputedStyle(anArticleNavContents, null);
+                let tr = styleOfTransform.getPropertyValue("-webkit-transform") || styleOfTransform.getPropertyValue("transform");
+                // If there is no transition we want to default to 0 and not null
+                let amount = Math.abs(parseInt(tr.split(",")[4]) || 0);
+                anArticleNavContents.style.transform = "none";
+                anArticleNavContents.classList.add("no-transition");
+                // Now lets set the scroll position
+                if (anSettings.navBarTravelDirection === "left") {
+                    anArticleNav.scrollLeft = anArticleNav.scrollLeft - amount;
+                } else {
+                    anArticleNav.scrollLeft = anArticleNav.scrollLeft + amount;
+                }
+                anSettings.navBarTravelling = false;
+            },
+            false
+        );
+    }
 
     // Handle setting the currently active link
     anArticleNavContents.addEventListener("click", function (e) {
@@ -209,7 +211,7 @@ function makeSticky() {
     }
 
     let fixedHeaderHeight = 0;
-    console.dir(anArticleNavEl);
+    // console.dir(anArticleNavEl);
     if (document.getElementById('fixedHeader') !== null) {
         fixedHeaderHeight = document.getElementById('fixedHeader').clientHeight
     }
@@ -243,13 +245,15 @@ function checkActiveArticle() {
         if (anArticleNav !== null) {
             if (bounds.bottom >= (viewport.top + anArticleNav.clientHeight) || bounds.top >= (viewport.top + anArticleNav.clientHeight)) {
                 var navLink = document.querySelector('a[href="#' + el.id + '"]');
+
                 // only adjust the navigation when there is an article with a headline (this headline will also be in the navigation)
                 if (el.hasAttribute('data-articlenav')) {
-                    navLink.setAttribute("aria-selected", "true");
-    
-                    moveIndicator(navLink);
+                    if (navLink) {
+                        navLink.setAttribute("aria-selected", "true");
+                        moveIndicator(navLink);
+                    }
                 }
-    
+
                 break;
             }
         }
@@ -363,3 +367,71 @@ function timeoutFunc(func) {
         timer = setTimeout(func, 300, event);
     };
 }
+
+(function () {
+    // let windowWidth = 0;
+    document.addEventListener("DOMContentLoaded", function (event) {
+        // windowWidth = window.outerWidth;
+        if (windowWidth < 1200) {
+            initExtraScroll();
+        }
+    })
+    function initExtraScroll() {
+        let doc = document
+        let articleNav = doc.querySelector('.mod_dse_article_nav')
+        let articleNavWidth = articleNav.offsetWidth
+        let articleNavItems = articleNav.querySelectorAll('a.an-nav-link')
+        let articleNavItemsWidth = 0
+        let articleNavContent
+        for (let i = 0; i < articleNavItems.length; i++) {
+            articleNavItemsWidth += articleNavItems[i].offsetWidth;
+        }
+
+        if (articleNavWidth < articleNavItemsWidth) {
+            articleNavContent = articleNav.querySelector('.an-article-nav-contents')
+            let activeItem
+            // let mousewheelScrollDown
+            // window.addEventListener('wheel', function (event) {
+            //     if (event.deltaY < 0) {
+            //         mousewheelScrollDown = false
+            //     }
+            //     else if (event.deltaY > 0) {
+            //         mousewheelScrollDown = true
+            //     }
+            // });
+            let offset = 0
+            let lastScrollPosition = 0;
+            window.addEventListener("scroll", timeoutFunc(function (event) {
+                let newScrollPosition = window.scrollY;
+                if (newScrollPosition < lastScrollPosition) {
+                    //upward - code here
+                    scrollDown = false
+                } else {
+                    //downward - code here
+                    scrollDown = true
+                }
+                lastScrollPosition = newScrollPosition;
+                activeItem = articleNav.querySelector("a.an-nav-link[aria-selected='true']")
+                if (activeItem && activeItem.getAttribute('data-index') > 2) {
+                    if (scrollDown) {
+                        let nextItem = activeItem.nextSibling
+                        if (nextItem) {
+                            offset = offset + nextItem.offsetWidth
+                            articleNavContent.setAttribute("style", "transform:translateX(-" + offset + "px)");
+                        }
+                    } else {
+                        let prevItem = activeItem.previousSibling
+                        if (prevItem) {
+                            offset = offset - prevItem.offsetWidth
+                            console.log(offset)
+                            articleNavContent.setAttribute("style", "transform:translateX(-" + offset + "px)");
+                        }
+                    }
+                } else {
+                    offset = 0
+                    articleNavContent.setAttribute("style", "transform:translateX(0px)");
+                }
+            }));
+        }
+    }
+})();
