@@ -1,8 +1,0 @@
-<div class="<?= $this->class ?> block"<?= $this->cssID ?>
-    <?php if ($this->style): ?> style="<?= $this->style ?>"<?php endif; ?>
-    <?php if ($this->dse_marginTop || $this->dse_marginBottom): ?>
-        style="<?php if ($this->dse_marginTop): ?>padding-top:<?= $this->dse_marginTop ?>px;<?php endif; ?><?php if ($this->dse_marginBottom): ?>padding-bottom:<?= $this->dse_marginBottom ?>px<?php endif; ?>"
-    <?php endif; ?>
->
-    TEST
-</div>

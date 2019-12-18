@@ -1,5 +1,11 @@
 <!-- indexer::stop -->
-<div class="<?php echo $this->class; ?> block"<?php echo $this->cssID; ?><?php if ($this->style): ?> style="<?php echo $this->style; ?>"<?php endif; ?>>
-    ds
-</div>
+    <div class="col col-12 mod_dse_article_nav" data-ansticky>
+        <div class="anWrapper">
+            <nav id="anArticleNav" class="an-article-nav">
+                <div id="anArticleNavContents" class="an-article-nav-contents"></div>
+            </nav>
+            <button id="anButtonLeft" class="an-button left" type="button"></button>
+            <button id="anButtonRight" class="an-button right" type="button"></button>
+        </div>
+    </div>
 <!-- indexer::continue -->

@@ -9,12 +9,10 @@ if (TL_MODE == 'FE') {
 /**
  * FRONT END MODULES
  */
-$GLOBALS['TL_CTE']['dse_elements']['dse_articles'] = 'Dse\\ArticleNavigationBundle\\contao\\elements\\ContentDseArticleNavigation';
-
 array_insert($GLOBALS['FE_MOD'], 2, array
 (
     'dse-modules' => array
     (
-        'dse_article_navigation' => 'Dse\ArticleNavigationBundle\contao\modules\ModuleArticleNavigation'
+        'dse_article_navigation' => 'Dse\ArticleNavigationBundle\Resources\contao\modules\ModuleArticleNavigation'
     )
 ));

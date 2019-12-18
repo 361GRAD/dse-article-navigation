@@ -1,6 +1,8 @@
 <?php
 
-namespace Dse\ArticleNavigationBundle\contao\modules;
+namespace Dse\ArticleNavigationBundle\Resources\contao\modules;
+
+use Contao\BackendTemplate;
 
 class ModuleArticleNavigation extends \Module {
 
@@ -18,8 +20,7 @@ class ModuleArticleNavigation extends \Module {
     {
         if (TL_MODE == 'BE') {
             $objTemplate = new BackendTemplate('be_wildcard');
-            // $objTemplate->wildcard = '### ' . $GLOBALS['TL_LANG']['MOD']['dse_article_navigation'][0] . ' ###';
-            $objTemplate->wildcard = '### TEEEEEEEEEEEEEEEEEEST ###';
+            $objTemplate->wildcard = '### ' . $GLOBALS['TL_LANG']['MOD']['dse_article_navigation'][0] . ' ###';
             $objTemplate->title = $this->headline;
             $objTemplate->id = $this->id;
             $objTemplate->link = $this->name;
