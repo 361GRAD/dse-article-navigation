@@ -49,6 +49,7 @@ div[data-ansticky="true"] .anWrapper {
 	transition: none;
 }
 
+.an-article-nav a,
 .an-nav-link {
 	color: #000;
 	font-size: 20px;
@@ -57,9 +58,11 @@ div[data-ansticky="true"] .anWrapper {
 	border: 1px solid transparent;
 	padding: 10px 20px;
 }
+.an-article-nav a + a,
 .an-nav-link + .an-nav-link {
     border-left-color: #eee;
 }
+.an-article-nav a[aria-selected="true"],
 .an-nav-link[aria-selected="true"] {
     color: #111;
 }
