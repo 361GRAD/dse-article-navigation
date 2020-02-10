@@ -27,7 +27,11 @@
 
                 let navItem = document.createElement('a');
                 navItem.innerHTML = '<span>' + articleAttr.substr(articleAttr.indexOf("-") + 1) + '</span>';
-                navItem.setAttribute('class', 'an-nav-link');
+                if (index === 0) {
+                    navItem.setAttribute('class', 'an-nav-link reading');
+                } else {
+                    navItem.setAttribute('class', 'an-nav-link');
+                }
                 navItem.setAttribute('data-scroll', '');
                 navItem.setAttribute('data-index', index);
                 navItem.setAttribute('href', '#anchor' + index);
