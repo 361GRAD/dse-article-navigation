@@ -208,7 +208,7 @@
             heightArr.push(parseInt(heightVal, 10))
         })
 
-        heightArr.forEach((val, index) => {
+        heightArr.forEach(function (val, index) {
             if (scrollY >= val - 100) {
                 currentAnchor = articlesTarget[index]
                 currentIndex = index
