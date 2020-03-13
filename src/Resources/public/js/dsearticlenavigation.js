@@ -237,18 +237,11 @@
 
     function initHorizontalScroll(modArticleNav, anArticleNavContents) {
         let anArticleNav = modArticleNav.querySelector('.an-article-nav');
-        // let anArticleNavWidth = anArticleNav.offsetWidth / 2;
         let anArticleNavWidth = anArticleNav.offsetWidth;
         let anArticleNavItems = Array.prototype.slice.call(modArticleNav.querySelectorAll('a.an-nav-link'))
-        // let anArticleNavItemsWidth = 0
-        // for (let i = 0; i < anArticleNavItems.length; i++) {
-        //     anArticleNavItemsWidth += anArticleNavItems[i].offsetWidth;
-        // }
-
-        // if (anArticleNavWidth < anArticleNavItemsWidth) {
         if (anArticleNavWidth < anArticleNavContents.offsetWidth) {
             let activeItem;
-            let borderIndex = anArticleNavItems[anArticleNavItems.length / 2].getAttribute('data-index')
+            let borderIndex = Math.floor(anArticleNavItems[Math.floor(anArticleNavItems.length / 2)].getAttribute('data-index'))
             if (windowWidth < 1200) {
                 let scrollOffset = 0;
                 let previousActive = null;
