@@ -27,7 +27,7 @@
 
                 let navItem = document.createElement('a');
                 navItem.innerHTML = '<span>' + articleAttr.substr(articleAttr.indexOf("-") + 1) + '</span>';
-                if (index === 0) {
+                if (index === 0 && window.scrollY === 0) {
                     navItem.setAttribute('class', 'an-nav-link reading');
                 } else {
                     navItem.setAttribute('class', 'an-nav-link');
@@ -52,13 +52,9 @@
             }, 100);
         });
 
-        if (windowWidth < 1200) {
-            initHorizontalScroll(modArticleNav, anArticleNavContents);
-        }
+        initHorizontalScroll(modArticleNav, anArticleNavContents);
         window.addEventListener("resize", timeoutFunc(function (event) {
-            if (windowWidth < 1200) {
-                initHorizontalScroll(modArticleNav, anArticleNavContents);
-            }
+            initHorizontalScroll(modArticleNav, anArticleNavContents);
         }))
 
     });
@@ -101,6 +97,7 @@
             anArticleNav.setAttribute("data-overflowing", determineOverflow(anArticleNavContents, anArticleNav));
         }
         anButtonLeft.addEventListener("click", function () {
+            navTransitionend()
             // If in the middle of a move return
             if (anSettings.navBarTravelling === true) {
                 return;
@@ -126,6 +123,7 @@
         });
 
         anButtonRight.addEventListener("click", function () {
+            navTransitionend()
             // If in the middle of a move return
             if (anSettings.navBarTravelling === true) {
                 return;
@@ -154,26 +152,29 @@
             anArticleNav.setAttribute("data-overflowing", determineOverflow(anArticleNavContents, anArticleNav));
         });
 
-        anArticleNavContents.addEventListener(
-            "transitionend",
-            function () {
-                // get the value of the transform, apply that to the current scroll position (so get the scroll pos first) and then remove the transform
-                let styleOfTransform = window.getComputedStyle(anArticleNavContents, null);
-                let tr = styleOfTransform.getPropertyValue("-webkit-transform") || styleOfTransform.getPropertyValue("transform");
-                // If there is no transition we want to default to 0 and not null
-                let amount = Math.abs(parseInt(tr.split(",")[4]) || 0);
-                anArticleNavContents.style.transform = "none";
-                anArticleNavContents.classList.add("no-transition");
-                // Now lets set the scroll position
-                if (anSettings.navBarTravelDirection === "left") {
-                    anArticleNav.scrollLeft = anArticleNav.scrollLeft - amount;
-                } else {
-                    anArticleNav.scrollLeft = anArticleNav.scrollLeft + amount;
-                }
-                anSettings.navBarTravelling = false;
-            },
-            false
-        );
+        function navTransitionend() {
+            anArticleNavContents.addEventListener(
+                "transitionend",
+                function () {
+                    // get the value of the transform, apply that to the current scroll position (so get the scroll pos first) and then remove the transform
+                    let styleOfTransform = window.getComputedStyle(anArticleNavContents, null);
+                    let tr = styleOfTransform.getPropertyValue("-webkit-transform") || styleOfTransform.getPropertyValue("transform");
+                    // If there is no transition we want to default to 0 and not null
+                    let amount = Math.abs(parseInt(tr.split(",")[4]) || 0);
+                    anArticleNavContents.style.transform = "none";
+                    anArticleNavContents.classList.add("no-transition");
+                    // Now lets set the scroll position
+                    if (anSettings.navBarTravelDirection === "left") {
+                        anArticleNav.scrollLeft = anArticleNav.scrollLeft - amount;
+                    } else {
+                        anArticleNav.scrollLeft = anArticleNav.scrollLeft + amount;
+                    }
+                    anSettings.navBarTravelling = false;
+                },
+                false
+            );
+        }
+
     }
 
     function makeNavSticky(fixedHeaderHeight) {
@@ -236,35 +237,52 @@
 
     function initHorizontalScroll(modArticleNav, anArticleNavContents) {
         let anArticleNav = modArticleNav.querySelector('.an-article-nav');
-        let anArticleNavWidth = anArticleNav.offsetWidth / 2;
-        let anArticleNavItems = modArticleNav.querySelectorAll('a.an-nav-link')
-        let anArticleNavItemsWidth = 0
-        for (let i = 0; i < anArticleNavItems.length; i++) {
-            anArticleNavItemsWidth += anArticleNavItems[i].offsetWidth;
-        }
+        // let anArticleNavWidth = anArticleNav.offsetWidth / 2;
+        let anArticleNavWidth = anArticleNav.offsetWidth;
+        let anArticleNavItems = Array.prototype.slice.call(modArticleNav.querySelectorAll('a.an-nav-link'))
+        // let anArticleNavItemsWidth = 0
+        // for (let i = 0; i < anArticleNavItems.length; i++) {
+        //     anArticleNavItemsWidth += anArticleNavItems[i].offsetWidth;
+        // }
 
-        if (anArticleNavWidth < anArticleNavItemsWidth) {
-            let scrollOffset = 0;
-            let previousActive = null;
-            window.addEventListener("scroll", timeoutFunc(function (event) {
-                let currentWidth = 0;
-                let activeItem = modArticleNav.querySelector("a.an-nav-link.scroll-active");
-                if (activeItem && activeItem.getAttribute('data-index') > 2 && activeItem !== previousActive) {
-                    let p = activeItem;
-                    while (p = p.previousElementSibling) {
-                        currentWidth += p.offsetWidth;
+        // if (anArticleNavWidth < anArticleNavItemsWidth) {
+        if (anArticleNavWidth < anArticleNavContents.offsetWidth) {
+            let activeItem;
+            let borderIndex = anArticleNavItems[anArticleNavItems.length / 2].getAttribute('data-index')
+            if (windowWidth < 1200) {
+                let scrollOffset = 0;
+                let previousActive = null;
+                window.addEventListener("scroll", timeoutFunc(function (event) {
+                    let currentWidth = 0;
+                    activeItem = modArticleNav.querySelector("a.an-nav-link.scroll-active");
+                    if (activeItem && activeItem.getAttribute('data-index') > 2 && activeItem !== previousActive) {
+                        let p = activeItem;
+                        while (p = p.previousElementSibling) {
+                            currentWidth += p.offsetWidth;
+                        }
+                        scrollOffset = (currentWidth - anArticleNavWidth / 2) + activeItem.offsetWidth / 2;
+                        // anArticleNav.scrollLeft = 0;
+                        // anArticleNavContents.classList.remove("no-transition");
+                        anArticleNavContents.setAttribute("style", "transform:translateX(-" + scrollOffset + "px)");
+                    } else if (activeItem && activeItem.getAttribute('data-index') <= 2 || window.pageYOffset === 0) {
+                        // anArticleNavContents.classList.remove("no-transition");
+                        scrollTo(anArticleNav, 0, 250);
+                        anArticleNavContents.setAttribute("style", "transform:translateX(0px)");
                     }
-                    scrollOffset = (currentWidth - anArticleNavWidth) + activeItem.offsetWidth / 2;
-                    anArticleNav.scrollLeft = 0;
-                    anArticleNavContents.classList.remove("no-transition");
-                    anArticleNavContents.setAttribute("style", "transform:translateX(-" + scrollOffset + "px)");
-                } else if (activeItem && activeItem.getAttribute('data-index') <= 2 || window.pageYOffset === 0) {
-                    anArticleNavContents.classList.remove("no-transition");
-                    scrollTo(anArticleNav, 0, 250);
-                    anArticleNavContents.setAttribute("style", "transform:translateX(0px)");
-                }
-                previousActive = activeItem;
-            }));
+                    previousActive = activeItem;
+                }));
+            } else {
+                let navArrowLeft = modArticleNav.querySelector('#anButtonLeft');
+                let navArrowRight = modArticleNav.querySelector('#anButtonRight');
+                window.addEventListener("scroll", timeoutFunc(function (event) {
+                    activeItem = modArticleNav.querySelector("a.an-nav-link.scroll-active");
+                    if (activeItem && activeItem.getAttribute('data-index') >= borderIndex) {
+                        navArrowRight.click()
+                    } else {
+                        navArrowLeft.click()
+                    }
+                }));
+            }
         }
     }
 
