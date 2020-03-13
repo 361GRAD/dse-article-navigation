@@ -241,7 +241,7 @@
         let anArticleNavItems = Array.prototype.slice.call(modArticleNav.querySelectorAll('a.an-nav-link'))
         if (anArticleNavWidth < anArticleNavContents.offsetWidth) {
             let activeItem;
-            let borderIndex = Math.floor(anArticleNavItems[Math.floor(anArticleNavItems.length / 2)].getAttribute('data-index'))
+            let borderIndex = anArticleNavItems[Math.floor(anArticleNavItems.length / 2)].getAttribute('data-index')
             if (windowWidth < 1200) {
                 let scrollOffset = 0;
                 let previousActive = null;
